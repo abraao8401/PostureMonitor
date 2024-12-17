@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "805596888954",
+    "project_id": "project-posture-monitor",
+    "storage_bucket": "project-posture-monitor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805596888954:android:b58e3f0bdf31c1a7aee0c3",
+        "android_client_info": {
+          "package_name": "com.example.teste_conexao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoIEu7zdzzVe6HTplE415HcU_zP-Jwmvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
