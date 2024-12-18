@@ -8,6 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +25,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
+import okhttp3.*
+import java.io.IOException
 
 // Classe de dados do sensor
 data class SensorData(
@@ -33,6 +38,18 @@ data class SensorData(
     val GyZ: Int = 0,
     val timestamp: Long = 0,
     val postureStatus: String = ""
+)
+
+// Classe para os dados do resumo de postura
+data class SensorDataSummary(
+    val totalRegistros: Int = 0,
+    val dataInicial: String = "",
+    val dataFinal: String = "",
+    val porcentagemPosturaCorreta: String = "",
+    val porcentagemPosturaIncorreta: String = "",
+    val duracaoTotal: String = "",
+    val tempoPosturaCorreta: String = "",
+    val tempoPosturaIncorreta: String = ""
 )
 
 class MainActivity : ComponentActivity() {
@@ -55,10 +72,25 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReportScreen() {
     val sensorDataList = remember { mutableStateListOf<SensorData>() }
+    val sensorSummary = remember { mutableStateOf<SensorDataSummary?>(null) }
     val context = LocalContext.current // Acesse o contexto local
 
     // Buscar os dados históricos do Firestore
     LaunchedEffect(Unit) {
+        // Buscar dados resumidos
+        FirebaseFirestore.getInstance()
+            .collection("sensorDataSummary")
+            .document("latestReport")
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                val summary = documentSnapshot.toObject(SensorDataSummary::class.java)
+                sensorSummary.value = summary
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Erro ao carregar resumo", Toast.LENGTH_SHORT).show()
+            }
+
+        // Buscar os dados históricos de sensor
         FirebaseFirestore.getInstance()
             .collection("sensorData")
             .orderBy("processedAt", Query.Direction.DESCENDING) // Ordenar por data
@@ -75,7 +107,6 @@ fun ReportScreen() {
             }
     }
 
-    // Exibição do relatório com os dados históricos
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,7 +121,13 @@ fun ReportScreen() {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Exibe os dados em uma lista
+        // Exibe o resumo de postura
+        sensorSummary.value?.let { summary ->
+            PostureSummaryCard(summary)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Exibe os dados históricos em uma lista
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp) // Espaçamento entre os itens
@@ -99,6 +136,89 @@ fun ReportScreen() {
                 ReportItem(sensorData = data)
             }
         }
+    }
+}
+
+@Composable
+fun PostureSummaryCard(summary: SensorDataSummary) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+        elevation = CardDefaults.cardElevation(8.dp) // Sombra ao redor do card
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Resumo de Postura",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1976D2)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Total de Registros: ${summary.totalRegistros}")
+                Icon(Icons.Filled.Check, contentDescription = "Success", tint = Color(0xFF388E3C))
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Data de Início: ${summary.dataInicial}")
+               // Icon(Icons.Filled.Check, contentDescription = "Success", tint = Color(0xFF388E3C))
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Data de Fim: ${summary.dataFinal}")
+              //  Icon(Icons.Filled.Check, contentDescription = "Success", tint = Color(0xFF388E3C))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Display de Postura
+            PostureDetailRow(
+                label = "Postura Correta",
+                value = "${summary.porcentagemPosturaCorreta}%",
+                isCorrect = true
+            )
+
+            PostureDetailRow(
+                label = "Postura Incorreta",
+                value = "${summary.porcentagemPosturaIncorreta}%",
+                isCorrect = false
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = "Duração Total: ${summary.duracaoTotal}")
+            Text(text = "Tempo de Postura Correta: ${summary.tempoPosturaCorreta}")
+            Text(text = "Tempo de Postura Incorreta: ${summary.tempoPosturaIncorreta}")
+        }
+    }
+}
+
+@Composable
+fun PostureDetailRow(label: String, value: String, isCorrect: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label)
+        Text(
+            text = value,
+            color = if (isCorrect) Color(0xFF388E3C) else Color(0xFFD32F2F),
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
