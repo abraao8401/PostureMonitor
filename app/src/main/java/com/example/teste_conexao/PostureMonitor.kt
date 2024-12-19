@@ -1,51 +1,61 @@
-package com.example.teste_conexao
-
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.NotificationCompat
 import android.app.NotificationManager
+import android.content.Context
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
+import androidx.core.app.NotificationCompat
+import com.example.teste_conexao.R
+import org.json.JSONObject
+import kotlin.math.sqrt
 
-class PostureMonitor(private val sensorManager: SensorManager, private val context: Context) : SensorEventListener {
+class PostureMonitor(private val context: Context) {
 
-    val isPostureGood: MutableState<Boolean> = mutableStateOf(false)
-    private var accelerometer: Sensor? = null
-    private var wasPostureBad = false // Controle se a postura já foi alertada
+    private val _isPostureGood = mutableStateOf(false)  // MutableState para controle de postura
+    val isPostureGood: State<Boolean> get() = _isPostureGood  // Exposição como State imutável
 
-    init {
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        accelerometer?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-        }
-    }
+    private var wasPostureBad = false
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        event?.let {
-            if (it.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                val (x, y, z) = it.values
+    // Valor de limiar de magnitude para determinar se a postura é adequada ou não
+    private val postureThreshold = 15000
 
-                val isGood = Math.abs(z) > Math.abs(x) && Math.abs(z) > Math.abs(y)
-                isPostureGood.value = isGood
+    // Processar dados recebidos via MQTT
+    fun processSensorData(data: String) {
+        try {
+            // Converte os dados JSON recebidos
+            val jsonData = JSONObject(data)
+            val acX = jsonData.getInt("AcX")
+            val acY = jsonData.getInt("AcY")
+            val acZ = jsonData.getInt("AcZ")
+            val gyX = jsonData.getInt("GyX")
+            val gyY = jsonData.getInt("GyY")
+            val gyZ = jsonData.getInt("GyZ")
 
-                // Se a postura estiver inadequada e o alerta ainda não foi enviado, envia notificação
-                if (!isGood && !wasPostureBad) {
-                    wasPostureBad = true
-                    showPostureAlertNotification()
-                }
+            // Calcula a magnitude do vetor de aceleração (AcX, AcY, AcZ)
+            val magnitude = sqrt((acX * acX + acY * acY + acZ * acZ).toDouble())
 
-                // Se a postura voltou a ser adequada, redefine o controle
-                if (isGood) {
-                    wasPostureBad = false
-                }
+            // Determina se a postura é boa com base na magnitude
+            val isGoodPosture = magnitude <= postureThreshold
+
+            // Se a postura for inadequada e o alerta não foi enviado
+            if (!isGoodPosture && !wasPostureBad) {
+                wasPostureBad = true
+                showPostureAlertNotification()
             }
+
+            // Se a postura estiver boa, reinicia a lógica
+            if (isGoodPosture) {
+                wasPostureBad = false
+            }
+
+            // Atualiza o estado de postura
+            _isPostureGood.value = isGoodPosture
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun showPostureAlertNotification() {
+        // Exibe a notificação quando a postura for ruim
         val notificationId = 1
         val channelId = "postura_notificacoes"
 
@@ -61,15 +71,11 @@ class PostureMonitor(private val sensorManager: SensorManager, private val conte
         notificationManager.notify(notificationId, notification)
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-
     fun onResume() {
-        accelerometer?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-        }
+        // Se necessário, reative a escuta
     }
 
     fun onPause() {
-        sensorManager.unregisterListener(this)
+        // Se necessário, suspenda a escuta
     }
 }

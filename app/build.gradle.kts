@@ -72,5 +72,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation(libs.org.eclipse.paho.client.mqttv3)
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
 
 }
