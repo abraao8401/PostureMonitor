@@ -1,9 +1,11 @@
 import android.app.NotificationManager
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.core.app.NotificationCompat
 import com.example.teste_conexao.R
+import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONObject
 import kotlin.math.sqrt
 
@@ -16,6 +18,9 @@ class PostureMonitor(private val context: Context) {
 
     // Valor de limiar de magnitude para determinar se a postura é adequada ou não
     private val postureThreshold = 15000
+
+    // Instância do Firestore
+    private val firestore = FirebaseFirestore.getInstance()
 
     // Processar dados recebidos via MQTT
     fun processSensorData(data: String) {
@@ -49,6 +54,9 @@ class PostureMonitor(private val context: Context) {
             // Atualiza o estado de postura
             _isPostureGood.value = isGoodPosture
 
+            // Envia os dados do sensor para o Firestore
+            sendSensorDataToFirebase(acX, acY, acZ, gyX, gyY, gyZ)
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -69,6 +77,33 @@ class PostureMonitor(private val context: Context) {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(notificationId, notification)
+    }
+
+    /**
+     * Envia um conjunto de dados do sensor para a coleção "sensorData" no Firestore.
+     * @param acX, acY, acZ, gyX, gyY, gyZ Dados do sensor.
+     */
+    private fun sendSensorDataToFirebase(acX: Int, acY: Int, acZ: Int, gyX: Int, gyY: Int, gyZ: Int) {
+        // Cria um mapa de dados do sensor
+        val data = hashMapOf(
+            "AcX" to acX,
+            "AcY" to acY,
+            "AcZ" to acZ,
+            "GyX" to gyX,
+            "GyY" to gyY,
+            "GyZ" to gyZ,
+            "timestamp" to System.currentTimeMillis()
+        )
+
+        // Envia os dados para a coleção "sensorData" no Firestore
+        firestore.collection("sensorData")
+            .add(data)
+            .addOnSuccessListener {
+                Log.d("Firebase", "Dados do sensor enviados com sucesso!")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firebase", "Erro ao enviar dados para o Firestore", e)
+            }
     }
 
     fun onResume() {
