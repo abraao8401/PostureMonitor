@@ -25,7 +25,8 @@
      -  Duração total do monitoramento.
  
   
-![image](https://github.com/user-attachments/assets/64c8e532-9259-4264-98ca-cb43662e7ad5)
+![image](https://github.com/user-attachments/assets/64c8e532-9259-4264-98ca-cb43662e7ad5)  ![image](https://github.com/user-attachments/assets/32e0d063-3d04-4496-99f6-88f9de398366)
+
 
 ## Módulo de Notificações em Tempo Real
 
