@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Inicializa o PostureMonitor
-        postureMonitor = PostureMonitor(applicationContext) // Agora está inicializado
+        postureMonitor = PostureMonitor(applicationContext) 
 
         // Conexão MQTT
         val serverUri = "tcp://broker.hivemq.com:1883"
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     message?.let {
                         val data = it.toString()
                         // Processa os dados recebidos
-                        postureMonitor.processSensorData(data) // Agora não dará erro
+                        postureMonitor.processSensorData(data) 
                     }
                 }
 
@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TesteconexaoTheme {
-                MainScreen(postureMonitor) // Agora o postureMonitor está inicializado
+                MainScreen(postureMonitor) 
             }
         }
     }
