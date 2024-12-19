@@ -32,6 +32,9 @@
 
 O aplicativo possui um sistema de notificações que alerta o usuário em tempo real sobre a sua postura. Sempre que a postura do usuário for detectada como inadequada, uma notificação será enviada para o dispositivo, solicitando que o usuário corrija sua posição para evitar problemas de saúde. As notificações são baseadas no processamento dos dados do acelerômetro e giroscópio.
 
+![image](https://github.com/user-attachments/assets/8fcab2b3-3052-421c-9007-d162cf32dcf2)
+
+
 ## Módulo de Relatórios
 
 O sistema também gera relatórios detalhados sobre o comportamento postural do usuário. O Firebase Functions processa todos os dados registrados no Firestore e gera um resumo com as seguintes informações:
