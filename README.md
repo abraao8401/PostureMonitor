@@ -23,6 +23,8 @@
      - Número total de registros.
      - Porcentagem de posturas adequadas e inadequadas.
      -  Duração total do monitoramento.
+ 
+  
 ![image](https://github.com/user-attachments/assets/64c8e532-9259-4264-98ca-cb43662e7ad5)
 
 ## Módulo de Notificações em Tempo Real
