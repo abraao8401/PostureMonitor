@@ -20,11 +20,11 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun MainScreen(postureMonitor: PostureMonitor) {
-    val context = LocalContext.current // Mover para aqui dentro do Composable
+    val context = LocalContext.current 
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Color(0xFFFF6F00) // Fundo laranja
+        containerColor = Color(0xFFFF6F00) 
     ) { innerPadding ->
         Column(
             modifier = Modifier
