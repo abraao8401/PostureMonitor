@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.monitoramentopostural.MainScreen
-import com.example.monitoramentopostural.PostureMonitor
-import com.example.monitoramentopostural.ui.theme.MonitoramentoPosturalTheme
+import com.example.teste_conexao.MainScreen
+import com.example.teste_conexao.PostureMonitor
+import com.example.teste_conexao.ui.theme.TesteconexaoTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
         createNotificationChannel()
 
         setContent {
-            MonitoramentoPosturalTheme {
+            TesteconexaoTheme {
                 MainScreen(postureMonitor)
             }
         }

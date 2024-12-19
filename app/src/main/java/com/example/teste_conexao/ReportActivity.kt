@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,8 +24,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
-import okhttp3.*
-import java.io.IOException
 
 // Classe de dados do sensor
 data class SensorData(
@@ -52,7 +49,7 @@ data class SensorDataSummary(
     val tempoPosturaIncorreta: String = ""
 )
 
-class MainActivity : ComponentActivity() {
+class ReportActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +59,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TesteconexaoTheme {
-                // Exibe o relatório de dados históricos
                 ReportScreen()
             }
         }
@@ -172,7 +168,6 @@ fun PostureSummaryCard(summary: SensorDataSummary) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Data de Início: ${summary.dataInicial}")
-               // Icon(Icons.Filled.Check, contentDescription = "Success", tint = Color(0xFF388E3C))
             }
 
             Row(
@@ -180,7 +175,6 @@ fun PostureSummaryCard(summary: SensorDataSummary) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Data de Fim: ${summary.dataFinal}")
-              //  Icon(Icons.Filled.Check, contentDescription = "Success", tint = Color(0xFF388E3C))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -267,13 +261,5 @@ fun ReportItem(sensorData: SensorData) {
                 fontWeight = FontWeight.Bold
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TesteconexaoTheme {
-        ReportScreen()
     }
 }
