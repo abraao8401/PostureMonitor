@@ -46,6 +46,9 @@ O sistema também gera relatórios detalhados sobre o comportamento postural do 
 
 Esses dados são armazenados na coleção sensorDataSummary no Firestore, onde os relatórios podem ser acessados a qualquer momento.
 
+![image](https://github.com/user-attachments/assets/f3cf7561-1448-4470-9b2b-cf84e6d6be5b)
+
+
 
 ## Conclusão
 
