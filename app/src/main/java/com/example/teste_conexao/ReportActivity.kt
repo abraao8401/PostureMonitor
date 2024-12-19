@@ -69,7 +69,7 @@ class ReportActivity : ComponentActivity() {
 fun ReportScreen() {
     val sensorDataList = remember { mutableStateListOf<SensorData>() }
     val sensorSummary = remember { mutableStateOf<SensorDataSummary?>(null) }
-    val context = LocalContext.current // Acesse o contexto local
+    val context = LocalContext.current 
 
     // Buscar os dados históricos do Firestore
     LaunchedEffect(Unit) {
