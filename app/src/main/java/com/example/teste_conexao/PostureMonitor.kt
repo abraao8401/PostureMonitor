@@ -107,10 +107,10 @@ class PostureMonitor(private val context: Context) {
     }
 
     fun onResume() {
-        // Se necessário, reative a escuta
+        
     }
 
     fun onPause() {
-        // Se necessário, suspenda a escuta
+       
     }
 }
